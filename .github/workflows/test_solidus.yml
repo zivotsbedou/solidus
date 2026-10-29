@@ -25,8 +25,8 @@ jobs:
     # NOTE: ubuntu-24.04 is required for libvips 8.13+. ActiveStorage 8.1 refuses to
     # load with older libvips, because it cannot disable the unfuzzed operations that
     # are unsafe on untrusted content. ubuntu-22.04 only ships libvips 8.12.1.
-    # Internal PRs and main runs use persistent ARM64 runners.
-    runs-on: ${{ fromJSON(github.repository == 'zivotsbedou/solidus' && (github.event_name == 'pull_request' || github.ref == 'refs/heads/main') && '["self-hosted","Linux","ARM64","lima"]' || '["ubuntu-24.04"]') }}
+    # Internal PRs and manually dispatched runs use persistent ARM64 runners.
+    runs-on: ${{ fromJSON(github.repository == 'zivotsbedou/solidus' && '["self-hosted","Linux","ARM64","lima"]' || '["ubuntu-24.04"]') }}
     strategy:
       fail-fast: false
       matrix:
