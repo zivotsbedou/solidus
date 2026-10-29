@@ -44,6 +44,11 @@ jobs:
             ruby: "4.0"
             database: postgres
             storage: activestorage
+          - rails: "8.1"
+            ruby: "4.0"
+            database: sqlite
+            storage: activestorage
+            processor: mini_magick
     env:
       ARTIFACTS_DIR: ${{ github.workspace }}/${{ inputs.lib_name }}/artifacts
       BUNDLE_WITHOUT: "lint release"
@@ -54,6 +59,7 @@ jobs:
       DB_PASSWORD: password
       DEFAULT_MAX_WAIT_TIME: 10
       DISABLE_ACTIVE_STORAGE: ${{ matrix.storage == 'paperclip' }}
+      ACTIVE_STORAGE_VARIANT_PROCESSOR: ${{ matrix.processor || 'vips' }}
       LIB_NAME: ${{ inputs.lib_name }}
       RAILS_ENV: test
       RAILS_VERSION: '~> ${{ matrix.rails }}'
@@ -86,6 +92,9 @@ jobs:
           --health-retries 5
     steps:
       - uses: actions/checkout@v6
+      - name: Install ImageMagick
+        if: ${{ matrix.processor == 'mini_magick' }}
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends imagemagick
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:

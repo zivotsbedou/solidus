@@ -12,6 +12,9 @@ else
 end
 # rubocop:enable Bundler/DuplicatedGem
 
+# image_processing 2 no longer installs the processor bindings.
+gem "ruby-vips", ">= 2.2.1", "< 3", require: false
+
 gem "debug"
 gem "launchy", require: false
 

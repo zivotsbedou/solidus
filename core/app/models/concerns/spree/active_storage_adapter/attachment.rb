@@ -30,12 +30,9 @@ module Spree
 
       def variant(style = nil)
         transformation = @transformations[style] || default_transformation(width, height)
-
-        @attachment.variant({
-          saver: {
-            strip: true
-          }
-        }.merge(transformation)).processed
+        # Active Storage's MiniMagick allowlist excludes saver; libvips needs strip under saver.
+        strip = (ActiveStorage.variant_processor == :mini_magick) ? {strip: true} : {saver: {strip: true}}
+        @attachment.variant(strip.merge(transformation)).processed
       end
 
       def height

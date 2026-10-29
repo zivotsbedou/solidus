@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require "sprockets/railtie"
 require "spree_core"
 require "spree_api"
 

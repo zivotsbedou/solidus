@@ -20,6 +20,7 @@ require "active_record/railtie"
 require "action_controller/railtie"
 require "action_mailer/railtie"
 require "active_storage/engine"
+require "sprockets/railtie"
 
 Rails.env = "test"
 
