@@ -99,8 +99,8 @@ jobs:
         id: setup-coverage
         if: ${{ inputs.coverage && ((github.repository == 'zivotsbedou/solidus' && matrix.ruby == '4.0') || (github.repository != 'zivotsbedou/solidus' && matrix.rails == '8.0' && matrix.ruby == '3.4')) }}
         run: |
-          echo "COVERAGE=true" >> $GITHUB_ENV
-          echo "coverage=true" >> $GITHUB_OUTPUT
+          echo "COVERAGE=true" >> "$GITHUB_ENV"
+          echo "coverage=true" >> "$GITHUB_OUTPUT"
       - name: Run tests
         run: |
           cd ${{ inputs.lib_name }}
