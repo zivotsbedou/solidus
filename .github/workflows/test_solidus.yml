@@ -30,7 +30,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include: ${{ fromJSON(github.repository == 'zivotsbedou/solidus' && '[{"rails":"8.1","ruby":"4.0","database":"postgres","storage":"activestorage"}]' || '[{"rails":"7.2","ruby":"3.2","database":"mysql","storage":"activestorage"},{"rails":"7.2","ruby":"3.3","database":"postgres","storage":"activestorage"},{"rails":"8.0","ruby":"3.4","database":"sqlite","storage":"activestorage"},{"rails":"8.1","ruby":"4.0","database":"postgres","storage":"activestorage"}]') }}
+        include: ${{ fromJSON(github.repository == 'zivotsbedou/solidus' && '[{"rails":"8.1","ruby":"4.0","database":"sqlite","storage":"activestorage"}]' || '[{"rails":"7.2","ruby":"3.2","database":"mysql","storage":"activestorage"},{"rails":"7.2","ruby":"3.3","database":"postgres","storage":"activestorage"},{"rails":"8.0","ruby":"3.4","database":"sqlite","storage":"activestorage"},{"rails":"8.1","ruby":"4.0","database":"postgres","storage":"activestorage"}]') }}
     env:
       ARTIFACTS_DIR: ${{ github.workspace }}/${{ inputs.lib_name }}/artifacts
       BUNDLE_WITHOUT: "lint release"
