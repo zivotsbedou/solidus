@@ -20,10 +20,9 @@ on:
 jobs:
   RSpec:
     name: Rails ${{ matrix.rails }}, Ruby ${{ matrix.ruby }}, ${{ matrix.database }}, ${{ matrix.storage }}
-    # NOTE: ubuntu-24.04 is required for libvips 8.13+. ActiveStorage 8.1 refuses to
-    # load with older libvips, because it cannot disable the unfuzzed operations that
-    # are unsafe on untrusted content. ubuntu-22.04 only ships libvips 8.12.1.
-    runs-on: ubuntu-24.04
+    # Ubuntu 24.04's libvips 8.15.1 retains PNG comments despite strip: true.
+    # Ubuntu 26.04 provides libvips 8.18, which fixes metadata stripping.
+    runs-on: ubuntu-26.04
     strategy:
       fail-fast: false
       matrix:
@@ -44,6 +43,11 @@ jobs:
             ruby: "4.0"
             database: postgres
             storage: activestorage
+          - rails: "8.1"
+            ruby: "4.0"
+            database: sqlite
+            storage: activestorage
+            processor: mini_magick
     env:
       ARTIFACTS_DIR: ${{ github.workspace }}/${{ inputs.lib_name }}/artifacts
       BUNDLE_WITHOUT: "lint release"
@@ -54,6 +58,7 @@ jobs:
       DB_PASSWORD: password
       DEFAULT_MAX_WAIT_TIME: 10
       DISABLE_ACTIVE_STORAGE: ${{ matrix.storage == 'paperclip' }}
+      ACTIVE_STORAGE_VARIANT_PROCESSOR: ${{ matrix.processor || 'vips' }}
       LIB_NAME: ${{ inputs.lib_name }}
       RAILS_ENV: test
       RAILS_VERSION: '~> ${{ matrix.rails }}'
@@ -86,6 +91,8 @@ jobs:
           --health-retries 5
     steps:
       - uses: actions/checkout@v6
+      - name: Install ImageMagick
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends imagemagick
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:

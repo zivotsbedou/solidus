@@ -7,7 +7,6 @@ require "active_job/railtie"
 require "active_model/railtie"
 require "active_record/railtie"
 require "active_storage/engine"
-require "sprockets/railtie"
 
 require "active_support/deprecation"
 require "spree/deprecated_instance_variable_proxy"
