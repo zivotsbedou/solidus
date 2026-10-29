@@ -3,6 +3,14 @@ Summary
 Solidus Core provides the essential e-commerce data models upon which the
 Solidus system depends.
 
+Image processing
+----------------
+Active Storage uses ImageMagick or libvips. When using libvips with
+image_processing 2, add `ruby-vips` to your application's Gemfile explicitly.
+Use libvips 8.16 or newer: older releases such as Ubuntu 24.04's 8.15.1
+retain PNG comments even with `strip: true`.
+The image specs also require ImageMagick to inspect processed output.
+
 Core models
 -----------
 Solidus implements over 200 [models](https://github.com/solidusio/solidus/tree/main/core/app/models/spree),
