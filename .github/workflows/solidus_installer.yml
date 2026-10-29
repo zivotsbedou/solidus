@@ -26,6 +26,10 @@ jobs:
       COVERAGE_DIR: ${{ github.workspace }}/storefront/coverage
     steps:
       - uses: actions/checkout@v6
+      - name: Use native Selenium Manager
+        if: runner.environment == 'self-hosted'
+        # The installer tests Ruby 3.2, whose Selenium manager is x64-only.
+        run: echo 'SE_MANAGER_PATH=/usr/local/bin/selenium-manager' >> "$GITHUB_ENV"
       - name: Install libvips
         if: runner.environment != 'self-hosted'
         run: |

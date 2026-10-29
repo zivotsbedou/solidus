@@ -89,6 +89,10 @@ jobs:
           --health-retries 5
     steps:
       - uses: actions/checkout@v6
+      - name: Use native Selenium Manager
+        if: runner.environment == 'self-hosted'
+        # Ruby 3.2's Selenium gem bundles an x64-only manager.
+        run: echo 'SE_MANAGER_PATH=/usr/local/bin/selenium-manager' >> "$GITHUB_ENV"
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
