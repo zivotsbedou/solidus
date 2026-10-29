@@ -15,7 +15,7 @@ env:
 jobs:
   ruby:
     # Fork PRs must not execute tests on organization infrastructure.
-    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    if: github.repository != 'zivotsbedou/solidus' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
     name: Check Ruby
     runs-on: [self-hosted, Linux, ARM64, lima]
     steps:
@@ -36,7 +36,7 @@ jobs:
 
   erb:
     # Fork PRs must not execute tests on organization infrastructure.
-    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    if: github.repository != 'zivotsbedou/solidus' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
     name: Check ERB
     runs-on: [self-hosted, Linux, ARM64, lima]
     steps:
@@ -52,7 +52,7 @@ jobs:
 
   javascript:
     # Fork PRs must not execute tests on organization infrastructure.
-    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    if: github.repository != 'zivotsbedou/solidus' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
     name: Check JavaScript
     runs-on: [self-hosted, Linux, ARM64, lima]
     env:

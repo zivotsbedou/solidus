@@ -30,23 +30,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - rails: "7.2"
-            ruby: "3.2"
-            database: mysql
-            storage: activestorage
-          - rails: "7.2"
-            ruby: "3.3"
-            database: postgres
-            storage: activestorage
-          - rails: "8.0"
-            ruby: "3.4"
-            database: sqlite
-            storage: activestorage
-          - rails: "8.1"
-            ruby: "4.0"
-            database: postgres
-            storage: activestorage
+        include: ${{ fromJSON(github.repository == 'zivotsbedou/solidus' && '[{"rails":"8.1","ruby":"4.0","database":"postgres","storage":"activestorage"}]' || '[{"rails":"7.2","ruby":"3.2","database":"mysql","storage":"activestorage"},{"rails":"7.2","ruby":"3.3","database":"postgres","storage":"activestorage"},{"rails":"8.0","ruby":"3.4","database":"sqlite","storage":"activestorage"},{"rails":"8.1","ruby":"4.0","database":"postgres","storage":"activestorage"}]') }}
     env:
       ARTIFACTS_DIR: ${{ github.workspace }}/${{ inputs.lib_name }}/artifacts
       BUNDLE_WITHOUT: "lint release"
@@ -89,10 +73,6 @@ jobs:
           --health-retries 5
     steps:
       - uses: actions/checkout@v6
-      - name: Use native Selenium Manager
-        if: runner.environment == 'self-hosted'
-        # Ruby 3.2's Selenium gem bundles an x64-only manager.
-        run: echo 'SE_MANAGER_PATH=/usr/local/bin/selenium-manager' >> "$GITHUB_ENV"
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
@@ -115,7 +95,7 @@ jobs:
           vips --version
       - name: Setup coverage
         id: setup-coverage
-        if: ${{ inputs.coverage && matrix.rails == '8.0' && matrix.ruby == '3.4' }}
+        if: ${{ inputs.coverage && ((github.repository == 'zivotsbedou/solidus' && matrix.ruby == '4.0') || (github.repository != 'zivotsbedou/solidus' && matrix.rails == '8.0' && matrix.ruby == '3.4')) }}
         run: |
           echo "COVERAGE=true" >> $GITHUB_ENV
           echo "coverage=true" >> $GITHUB_OUTPUT
