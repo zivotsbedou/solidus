@@ -15,7 +15,8 @@ concurrency:
 jobs:
   install_dummy_app:
     name: Dummy App
-    runs-on: ubuntu-24.04
+    # Public pull requests run on disposable GitHub-hosted runners.
+    runs-on: ${{ fromJSON(github.repository == 'zivotsbedou/solidus' && github.event_name == 'push' && github.ref == 'refs/heads/main' && '["self-hosted","Linux","ARM64","lima"]' || '["ubuntu-24.04"]') }}
     env:
       RUBY_VERSION: "3.2"
     steps:
