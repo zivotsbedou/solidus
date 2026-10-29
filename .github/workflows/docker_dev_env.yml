@@ -22,6 +22,8 @@ permissions:
 
 jobs:
   compose:
+    # Fork PRs must not execute tests on organization infrastructure.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     name: Build image and bundle
     runs-on: ubuntu-24.04
     timeout-minutes: 45

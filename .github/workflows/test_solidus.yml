@@ -19,12 +19,14 @@ on:
 
 jobs:
   RSpec:
+    # Fork PRs must not execute tests on organization infrastructure.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     name: Rails ${{ matrix.rails }}, Ruby ${{ matrix.ruby }}, ${{ matrix.database }}, ${{ matrix.storage }}
     # NOTE: ubuntu-24.04 is required for libvips 8.13+. ActiveStorage 8.1 refuses to
     # load with older libvips, because it cannot disable the unfuzzed operations that
     # are unsafe on untrusted content. ubuntu-22.04 only ships libvips 8.12.1.
-    # Only trusted main runs use persistent runners. MySQL 5.7 and Chrome jobs stay x64.
-    runs-on: ${{ fromJSON(github.repository == 'zivotsbedou/solidus' && github.event_name != 'pull_request' && github.ref == 'refs/heads/main' && matrix.database != 'mysql' && inputs.lib_name != 'admin' && inputs.lib_name != 'backend' && '["self-hosted","Linux","ARM64","lima"]' || '["ubuntu-24.04"]') }}
+    # Internal PRs and main runs use persistent runners. MySQL 5.7 and Chrome jobs stay x64.
+    runs-on: ${{ fromJSON(github.repository == 'zivotsbedou/solidus' && (github.event_name == 'pull_request' || github.ref == 'refs/heads/main') && matrix.database != 'mysql' && inputs.lib_name != 'admin' && inputs.lib_name != 'backend' && '["self-hosted","Linux","ARM64","lima"]' || '["ubuntu-24.04"]') }}
     strategy:
       fail-fast: false
       matrix:

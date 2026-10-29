@@ -12,6 +12,8 @@ concurrency:
 
 jobs:
   solidus_admin:
+    # Fork PRs must not execute tests on organization infrastructure.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     uses: ./.github/workflows/test_solidus.yml
     with:
       artifacts: true
@@ -20,6 +22,8 @@ jobs:
     secrets: inherit
 
   solidus_api:
+    # Fork PRs must not execute tests on organization infrastructure.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     uses: ./.github/workflows/test_solidus.yml
     with:
       lib_name: api
@@ -27,6 +31,8 @@ jobs:
     secrets: inherit
 
   solidus_backend:
+    # Fork PRs must not execute tests on organization infrastructure.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     uses: ./.github/workflows/test_solidus.yml
     with:
       lib_name: backend
@@ -34,6 +40,8 @@ jobs:
     secrets: inherit
 
   solidus_backend_js:
+    # Fork PRs must not execute tests on organization infrastructure.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     name: solidus_backend JS
     runs-on: ubuntu-latest
     env:
@@ -51,6 +59,8 @@ jobs:
           bundle exec teaspoon --require=spec/teaspoon_env.rb
 
   solidus_core:
+    # Fork PRs must not execute tests on organization infrastructure.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     uses: ./.github/workflows/test_solidus.yml
     with:
       lib_name: core
@@ -58,12 +68,16 @@ jobs:
     secrets: inherit
 
   solidus_i18n:
+    # Fork PRs must not execute tests on organization infrastructure.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     uses: ./.github/workflows/test_solidus.yml
     with:
       lib_name: i18n
     secrets: inherit
 
   solidus_sample:
+    # Fork PRs must not execute tests on organization infrastructure.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     uses: ./.github/workflows/test_solidus.yml
     with:
       lib_name: sample
@@ -71,6 +85,8 @@ jobs:
     secrets: inherit
 
   solidus_legacy_promotions:
+    # Fork PRs must not execute tests on organization infrastructure.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     uses: ./.github/workflows/test_solidus.yml
     with:
       lib_name: legacy_promotions
@@ -78,6 +94,8 @@ jobs:
     secrets: inherit
 
   solidus_promotions:
+    # Fork PRs must not execute tests on organization infrastructure.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     uses: ./.github/workflows/test_solidus.yml
     with:
       lib_name: promotions
