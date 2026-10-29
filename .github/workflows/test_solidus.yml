@@ -19,35 +19,16 @@ on:
 
 jobs:
   RSpec:
+    # Fork PRs must not execute tests on organization infrastructure.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     name: Rails ${{ matrix.rails }}, Ruby ${{ matrix.ruby }}, ${{ matrix.database }}, ${{ matrix.storage }}
-    # Ubuntu 24.04's libvips 8.15.1 retains PNG comments despite strip: true.
-    # Ubuntu 26.04 provides libvips 8.18, which fixes metadata stripping.
-    runs-on: ubuntu-26.04
+    # Hosted runners need Ubuntu 26.04 for fixed libvips PNG metadata stripping.
+    # Internal PRs and manually dispatched runs use persistent ARM64 runners.
+    runs-on: ${{ fromJSON(github.repository == 'zivotsbedou/solidus' && '["self-hosted","Linux","ARM64","lima"]' || '["ubuntu-26.04"]') }}
     strategy:
       fail-fast: false
       matrix:
-        include:
-          - rails: "7.2"
-            ruby: "3.2"
-            database: mysql
-            storage: activestorage
-          - rails: "7.2"
-            ruby: "3.3"
-            database: postgres
-            storage: activestorage
-          - rails: "8.0"
-            ruby: "3.4"
-            database: sqlite
-            storage: activestorage
-          - rails: "8.1"
-            ruby: "4.0"
-            database: postgres
-            storage: activestorage
-          - rails: "8.1"
-            ruby: "4.0"
-            database: sqlite
-            storage: activestorage
-            processor: mini_magick
+        include: ${{ fromJSON(github.repository == 'zivotsbedou/solidus' && '[{"rails":"8.1","ruby":"4.0","database":"sqlite","storage":"activestorage"}]' || '[{"rails":"7.2","ruby":"3.2","database":"mysql","storage":"activestorage"},{"rails":"7.2","ruby":"3.3","database":"postgres","storage":"activestorage"},{"rails":"8.0","ruby":"3.4","database":"sqlite","storage":"activestorage"},{"rails":"8.1","ruby":"4.0","database":"postgres","storage":"activestorage"},{"rails":"8.1","ruby":"4.0","database":"sqlite","storage":"activestorage","processor":"mini_magick"}]') }}
     env:
       ARTIFACTS_DIR: ${{ github.workspace }}/${{ inputs.lib_name }}/artifacts
       BUNDLE_WITHOUT: "lint release"
@@ -77,7 +58,7 @@ jobs:
           --health-timeout 5s
           --health-retries 5
       mysql:
-        image: ${{ matrix.database == 'mysql' && 'mysql:5.7' || '' }}
+        image: ${{ matrix.database == 'mysql' && 'mysql:8.0' || '' }}
         env:
           MYSQL_ROOT_PASSWORD: ${{ env.DB_PASSWORD }}
           MYSQL_PASSWORD: ${{ env.DB_PASSWORD }}
@@ -92,6 +73,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: Install ImageMagick
+        if: runner.environment != 'self-hosted'
         run: sudo apt-get update && sudo apt-get install -y --no-install-recommends imagemagick
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
@@ -108,17 +90,17 @@ jobs:
       # tools apt recommends are dead weight; libvips-tools is requested explicitly
       # because it provides the `vips` binary used by the check below.
       - name: Install libvips
-        if: ${{ matrix.storage == 'activestorage' }}
+        if: ${{ matrix.storage == 'activestorage' && runner.environment != 'self-hosted' }}
         run: |
           sudo apt-get update
           sudo apt-get install -yq --no-install-recommends libvips-dev libvips-tools
           vips --version
       - name: Setup coverage
         id: setup-coverage
-        if: ${{ inputs.coverage && matrix.rails == '8.0' && matrix.ruby == '3.4' }}
+        if: ${{ inputs.coverage && ((github.repository == 'zivotsbedou/solidus' && matrix.ruby == '4.0') || (github.repository != 'zivotsbedou/solidus' && matrix.rails == '8.0' && matrix.ruby == '3.4')) }}
         run: |
-          echo "COVERAGE=true" >> $GITHUB_ENV
-          echo "coverage=true" >> $GITHUB_OUTPUT
+          echo "COVERAGE=true" >> "$GITHUB_ENV"
+          echo "coverage=true" >> "$GITHUB_OUTPUT"
       - name: Run tests
         run: |
           cd ${{ inputs.lib_name }}

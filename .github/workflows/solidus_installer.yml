@@ -14,8 +14,10 @@ concurrency:
 
 jobs:
   solidus_installer:
+    # Fork PRs must not execute tests on organization infrastructure.
+    if: github.repository != 'zivotsbedou/solidus' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
     name: Test Installer
-    runs-on: ubuntu-24.04
+    runs-on: [self-hosted, Linux, ARM64, lima]
     env:
       DB: sqlite
       RUBY_VERSION: "3.2"
@@ -25,6 +27,7 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - name: Install libvips
+        if: runner.environment != 'self-hosted'
         run: |
           sudo apt-get update
           sudo apt-get install -yq libvips-dev

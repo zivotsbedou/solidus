@@ -14,8 +14,11 @@ concurrency:
 
 jobs:
   install_dummy_app:
+    # Fork PRs must not execute tests on organization infrastructure.
+    if: github.repository != 'zivotsbedou/solidus' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
     name: Dummy App
-    runs-on: ubuntu-24.04
+    # Only internal branches reach this job.
+    runs-on: ${{ fromJSON(github.repository == 'zivotsbedou/solidus' && (github.event_name == 'pull_request' || github.ref == 'refs/heads/main') && '["self-hosted","Linux","ARM64","lima"]' || '["ubuntu-24.04"]') }}
     env:
       RUBY_VERSION: "3.2"
     steps:
